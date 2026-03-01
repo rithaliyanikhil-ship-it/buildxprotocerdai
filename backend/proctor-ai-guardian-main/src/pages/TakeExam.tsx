@@ -160,14 +160,23 @@ const TakeExam = () => {
   }, [proctoring.videoStream, exam]);
 
   const startExam = async () => {
-    if (!user || !examId) return;
+    if (!examId) return;
+
+    // Retrieve local auth info
+    const studentName = localStorage.getItem("userName");
+    const studentRollNo = localStorage.getItem("userRollNo");
 
     // Stop preview stream before creating session
     proctoring.stop();
 
     const { data: session, error } = await supabase
       .from("exam_sessions")
-      .insert({ exam_id: examId, user_id: user.id, status: "in_progress" })
+      .insert({
+        exam_id: examId,
+        student_name: studentName,
+        student_roll_no: studentRollNo,
+        status: "in_progress"
+      })
       .select()
       .single();
 
